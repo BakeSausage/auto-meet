@@ -9,7 +9,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     console.log('Alarm triggered:', alarm.name);
     if (alarm.name.startsWith('meetAlarm-')) {
         const url = alarm.name.split('meetAlarm-')[1]; // 提取網址
-        chrome.tabs.create({ url: `https://meet.google.com/${url}` }, (tab) => {
+        chrome.tabs.create({ url: `https://meet.google.com/${url}` , active: false }, (tab) => {
             chrome.scripting.executeScript({
                 target: { tabId: tab.id },
                 files: ['content.js']
