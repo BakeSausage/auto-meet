@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Google Meet Scheduler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 300px;
+        }
+        .url-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .url-item input[type="text"] {
+            flex: 1;
+            margin-right: 10px;
+        }
+        button {
+            margin-top: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 第一層：輸入網址 -->
+    <div id="urlLayer">
+        <h3>Enter Google Meet URLs</h3>
+        <div id="urlContainer">
+            <div class="url-item">
+                <input type="text" class="meet-url" placeholder="Enter Google Meet ID">
+                <button class="editSchedule">Edit Schedule</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第二層：排程時間 -->
+    <div id="scheduleLayer" class="hidden">
+        <h3>Schedule for <span id="currentUrl"></span></h3>
+        <table id="scheduleTable">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <label for="day">Day:</label>
+        <select id="day">
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+        </select>
+        <label for="time">Time:</label>
+        <input type="time" id="time">
+        <button id="addTime">Add Time</button>
+        <button id="backButton">Back</button>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
