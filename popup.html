@@ -26,13 +26,13 @@
     </style>
 </head>
 <body>
-    <!-- 第一層：輸入網址 -->
+    <!-- 第一層：輸入 Google Meet 網址 -->
     <div id="urlLayer">
         <h3>Enter Google Meet URLs</h3>
         <div id="urlContainer">
             <div class="url-item">
-                <input type="text" class="meet-url" placeholder="Enter Google meeting codes">
-                <button class="editSchedule">Edit Schedule</button>
+                <input type="text" class="meet-url" placeholder="Enter Google Meet ID">
+                <button class="editSchedule">加入行程</button>
             </div>
         </div>
     </div>
@@ -50,16 +50,8 @@
             <tbody>
             </tbody>
         </table>
-        <label for="day">Day:</label>
-        <select id="day">
-            <option value="Monday">Monday</option>
-            <option value="Tuesday">Tuesday</option>
-            <option value="Wednesday">Wednesday</option>
-            <option value="Thursday">Thursday</option>
-            <option value="Friday">Friday</option>
-            <option value="Saturday">Saturday</option>
-            <option value="Sunday">Sunday</option>
-        </select>
+        <label for="date">Date:</label>
+        <input type="date" id="date">
         <label for="time">Time:</label>
         <input type="time" id="time">
         <button id="addTime">Add Time</button>
