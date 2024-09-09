@@ -114,7 +114,7 @@ function loadScheduleForUrl(url) {
 
             deleteCell.querySelector('.delete').addEventListener('click', () => {
                 row.remove();
-                removeScheduleItem(currentUrl, item);
+                removeScheduleItem(url, item);
             });
         });
     });
