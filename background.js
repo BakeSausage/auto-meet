@@ -8,10 +8,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 chrome.alarms.onAlarm.addListener((alarm) => {
     console.log('Alarm triggered:', alarm.name);
     if (alarm.name === 'checkMeetings') {
-        console.log('Checking meetings and setting alarms...'); // 添加这一行
-        checkAndSetAlarms(); // 定期检查并设置闹钟
+        console.log('Checking meetings and setting alarms...');
+        checkAndSetAlarms(); // 每分鐘檢查並設置鬧鐘
     } else if (alarm.name.startsWith('meetAlarm-')) {
-        const [_, url] = alarm.name.split('meetAlarm-'); // 提取网址
+        const urlWithExtraTime = alarm.name.split('meetAlarm-')[1]; // 提取带时间的 URL
+        const url = urlWithExtraTime.split('-')[0]; // 去除时间部分，保留 Meet ID
+	console.log(`https://meet.google.com/${url}`)
         chrome.tabs.create({ url: `https://meet.google.com/${url}`, active: false }, (tab) => {
             chrome.scripting.executeScript({
                 target: { tabId: tab.id },
@@ -20,6 +22,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
         });
     }
 });
+
 
 function checkAndSetAlarms() {
     const bufferTime = 60 * 1000; // 一分钟的缓冲时间
