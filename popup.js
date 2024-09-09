@@ -36,11 +36,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('addTime').addEventListener('click', () => {
-        const day = document.getElementById('day').value;
+        const date = document.getElementById('date').value;
         const time = document.getElementById('time').value;
 
-        if (day && time) {
-            const scheduleItem = `${day} ${time}`;
+        if (date && time) {
+            const scheduleItem = `${date} ${time}`;
             addScheduleItem(scheduleItem);
             saveSchedule(currentUrl, scheduleItem);
         } else {
@@ -106,9 +106,9 @@ function loadScheduleForUrl(url) {
         tableBody.innerHTML = ''; // 清除現有的表格行
 
         schedule.forEach(item => {
-            const [day, time] = item.split(' ');
+            const [date, time] = item.split(' ');
             const row = tableBody.insertRow();
-            row.insertCell().textContent = `${day} ${time}`;
+            row.insertCell().textContent = `${date} ${time}`;
             const deleteCell = row.insertCell();
             deleteCell.innerHTML = '<button class="delete">刪除</button>';
 
@@ -122,9 +122,9 @@ function loadScheduleForUrl(url) {
 
 function addScheduleItem(item) {
     const tableBody = document.getElementById('scheduleTable').getElementsByTagName('tbody')[0];
-    const [day, time] = item.split(' ');
+    const [date, time] = item.split(' ');
     const row = tableBody.insertRow();
-    row.insertCell().textContent = `${day} ${time}`;
+    row.insertCell().textContent = `${date} ${time}`;
     const deleteCell = row.insertCell();
     deleteCell.innerHTML = '<button class="delete">刪除</button>';
 
