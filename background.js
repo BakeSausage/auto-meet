@@ -7,21 +7,28 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 chrome.alarms.onAlarm.addListener((alarm) => {
     console.log('Alarm triggered:', alarm.name);
+
     if (alarm.name === 'checkMeetings') {
         console.log('Checking meetings and setting alarms...');
         checkAndSetAlarms(); // 每分鐘檢查並設置鬧鐘
     } else if (alarm.name.startsWith('meetAlarm-')) {
-        const urlWithExtraTime = alarm.name.split('meetAlarm-')[1]; // 提取带时间的 URL
-        const url = urlWithExtraTime.split('-')[0]; // 去除时间部分，保留 Meet ID
-	console.log(`https://meet.google.com/${url}`)
+        const url = alarm.name.split('meetAlarm-')[1]; // 提取网址
+        console.log(`https://meet.google.com/${url}`); // 使用模板字符串
+        
         chrome.tabs.create({ url: `https://meet.google.com/${url}`, active: false }, (tab) => {
             chrome.scripting.executeScript({
                 target: { tabId: tab.id },
                 files: ['content.js']
             });
         });
+    } else {
+        console.error('Alarm name does not match expected format:', alarm.name);
     }
 });
+
+
+
+
 
 
 function checkAndSetAlarms() {
@@ -57,7 +64,7 @@ function checkAndSetAlarms() {
                     console.log(`Setting alarm for ${url} - ${item} at ${targetDate.toString()}`);
 
                     // 设置闹钟，闹钟名称包括 "meetAlarm-"、URL、日期和时间
-                    chrome.alarms.create(alarmName, { when: targetDate.getTime() });
+                    chrome.alarms.create(`meetAlarm-${url}`, { when: targetDate.getTime() });
                 });
             });
         });
