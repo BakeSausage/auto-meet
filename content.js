@@ -1,9 +1,8 @@
-console.log("enter content");
+console.log("enter meet");
 
 window.onload = function() {
-    console.log("enter function");
 
-    const interval = setInterval(() => {
+    const interval1 = setInterval(() => {
         const micButton = document.querySelector('[aria-label="關閉麥克風"]');
         if (micButton) {
             console.log("find mic button");
@@ -19,15 +18,23 @@ window.onload = function() {
         } else {
             console.log("cant find video button");
         }
+		
+		if (micButton && videoButton) {
+			clearInterval(interval1);
+		}
+    }, 1000);  // 每秒檢查一次
 
-        const joinButton = Array.from(document.querySelectorAll('button')).find(btn => btn.innerText.includes('立即加入'));
+    const interval2 = setInterval(() => {
+        const joinButton = Array.from(document.querySelectorAll('button')).find(btn => 
+            btn.innerText.includes('立即加入') || btn.innerText.includes('切換到這裡')
+        );
         if (joinButton) {
             console.log("find join button");
-            clearInterval(interval);  // 停止檢查
+            clearInterval(interval2);  // 停止檢查
 
-            // 延遲3秒後點擊
+            // 延遲5秒後點擊
             setTimeout(() => {
-                console.log("clicking join button after 3 seconds");
+                console.log("clicking join button after 5 seconds");
                 joinButton.click();
             }, 5000);
         } else {
