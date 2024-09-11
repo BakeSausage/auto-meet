@@ -1,91 +1,68 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'updateSchedule') {
-        console.log('Received updateSchedule message');
-        checkAndSetAlarms(); // 重新检查并设置闹钟
-    }
-});
+(() => {
+    "use strict";
+	
+	const STORAGE_KEY = 'meetSchedules';
+	
+    // 创建一个每分钟触发的闹钟
+    chrome.alarms.create("checkSign", {
+        periodInMinutes: 1
+    });
 
-chrome.alarms.onAlarm.addListener((alarm) => {
-    console.log('Alarm triggered:', alarm.name);
+    chrome.alarms.onAlarm.addListener(() => {
+        //console.log("Start checking sign...");
+        // 获取存储的数据
+		chrome.storage.sync.get(STORAGE_KEY, (data) => {
+			const schedules = data[STORAGE_KEY] || {};
+			
+            if (!schedules) {
+				return;
+			}
 
-    if (alarm.name === 'checkMeetings') {
-        console.log('Checking meetings and setting alarms...');
-        checkAndSetAlarms(); // 每分鐘檢查並設置鬧鐘
-    } else if (alarm.name.startsWith('meetAlarm-')) {
-        const url = alarm.name.split('meetAlarm-')[1]; // 提取网址
-        console.log(`https://meet.google.com/${url}`); // 使用模板字符串
-        
-        chrome.tabs.create({ url: `https://meet.google.com/${url}`, active: false }, (tab) => {
-            chrome.scripting.executeScript({
-                target: { tabId: tab.id },
-                files: ['content.js']
-            });
-        });
-    } else {
-        console.error('Alarm name does not match expected format:', alarm.name);
-    }
-});
+			for (const url in schedules) {
+				const {signStates} = schedules[url];
+				
+				for (const signState in signStates) {
+					const {date, hours, minutes, isopen} = signStates[signState];
 
+					if (!date || !hours || !minutes) {
+						console.log("wrong meeting data, return.");
+						return;
+					}
 
+					const now = new Date();
+					const targetDateTime = new Date(`${date}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`);
 
+					// 如果当前时间超过目标时间并且尚未执行过任务
+					if (now > targetDateTime && !isopen) {
+						console.log("try to join meet: ", {url})
+						
+						signStates[signState].isopen = true;
+						chrome.storage.sync.set({ [STORAGE_KEY]: schedules });
 
-
-
-function checkAndSetAlarms() {
-    const bufferTime = 60 * 1000; // 一分钟的缓冲时间
-
-    chrome.storage.sync.get(null, (data) => {
-        // 不再清除所有闹钟
-
-        // 获取当前已存在的闹钟列表
-        chrome.alarms.getAll((alarms) => {
-            const existingAlarms = alarms.map(alarm => alarm.name);
-
-            Object.keys(data).forEach(url => {
-                const schedule = data[url];
-                schedule.forEach(item => {
-                    const [date, time] = item.split(' ');
-                    const now = new Date();
-                    const targetDate = new Date(`${date}T${time}`);
-
-                    if (targetDate.getTime() + bufferTime <= now.getTime()) {
-                        console.log(`Skipping alarm for ${url} - ${item}, as the target time has passed.`);
-                        return;
-                    }
-
-                    const alarmName = `meetAlarm-${url}-${date}-${time}`;
-
-                    // 如果闹钟已存在，跳过设置
-                    if (existingAlarms.includes(alarmName)) {
-                        console.log(`Alarm ${alarmName} already exists.`);
-                        return;
-                    }
-
-                    console.log(`Setting alarm for ${url} - ${item} at ${targetDate.toString()}`);
-
-                    // 设置闹钟，闹钟名称包括 "meetAlarm-"、URL、日期和时间
-                    chrome.alarms.create(`meetAlarm-${url}`, { when: targetDate.getTime() });
-                });
-            });
+						chrome.tabs.create({ url: `https://meet.google.com/${url}`, active: false }, (tab) => {
+							chrome.scripting.executeScript({
+								target: { tabId: tab.id },
+								files: ['content.js']
+							});
+						});
+						console.log("success open meet.");
+					}
+				}
+			}
         });
     });
 
-    // 定期清理过期的闹钟
-    cleanUpExpiredAlarms();
-}
-
-function cleanUpExpiredAlarms() {
-    const bufferTime = 60 * 1000; // 一分钟的缓冲时间
-    chrome.alarms.getAll((alarms) => {
-        const now = Date.now();
-        alarms.forEach((alarm) => {
-            if (alarm.name.startsWith('meetAlarm-') && alarm.scheduledTime + bufferTime <= now) {
-                chrome.alarms.clear(alarm.name);
-                console.log(`Cleared expired alarm: ${alarm.name}`);
-            }
-        });
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+        if (message.type === 'addSchedule') {
+            console.log("add schedule : ", message.url, message.date, message.time);
+        } else if (message.type === 'removeSchedule') {
+            console.log("delete schedule: ", message.url, message.time.date, `${message.time.hours}:${message.time.minutes}`);
+        } else if (message.type === 'urlDeleted') {
+            console.log("URL deleted: ", message.url);
+        }else if (message.type === 'updateSchedule') {
+            console.log("update Schedule");
+        }else if (message.type === 'debug') {
+			console.log(message.message)
+		}
     });
-}
-
-// 初始化时设置定期检查闹钟
-chrome.alarms.create('checkMeetings', { periodInMinutes: 1 });
+})();
