@@ -26,6 +26,7 @@
 
 					if (!date || !hours || !minutes) {
 						console.log("wrong meeting data, return.");
+						console.log({date, hours, minutes, isopen})
 						return;
 					}
 
@@ -34,12 +35,12 @@
 
 					// 如果当前时间超过目标时间并且尚未执行过任务
 					if (now > targetDateTime && !isopen) {
-						console.log("try to join meet: ", {url})
+						console.log(`try to open page : ${url}`)
 						
 						signStates[signState].isopen = true;
 						chrome.storage.sync.set({ [STORAGE_KEY]: schedules });
 
-						chrome.tabs.create({ url: `https://meet.google.com/${url}`, active: false }, (tab) => {
+						chrome.tabs.create({ url: `https://meet.google.com/${url}`, active: true }, (tab) => {
 							chrome.scripting.executeScript({
 								target: { tabId: tab.id },
 								files: ['content.js']
@@ -51,7 +52,8 @@
 			}
         });
     });
-
+    
+    //背景頁的請求處理
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         if (message.type === 'addSchedule') {
             console.log("add schedule : ", message.url, message.date, message.time);
@@ -63,6 +65,17 @@
             console.log("update Schedule");
         }else if (message.type === 'debug') {
 			console.log(message.message)
-		}
+		}else if (message.action === 'captureScreenshot') {
+          chrome.tabs.captureVisibleTab(null, {format: "png"}, function(dataUrl) {
+            if (chrome.runtime.lastError) {
+              sendResponse({success: false, error: chrome.runtime.lastError.message});
+            } else {
+              // 這裡可以添加保存或處理截圖的邏輯
+              console.log("Screenshot taken:", dataUrl.substring(0, 50) + "...");
+              sendResponse({ success: true, dataUrl: dataUrl });
+            }
+          });
+          return true;  // 表示將異步發送回應
+        }
     });
 })();
