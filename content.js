@@ -56,8 +56,8 @@ const waitForElement = (selector, text = '', timeout = 5000, numberOfElement = 0
     delay(timeout, {
       checkInterval: 200,
       checkCompletion,
-      onTimeout: () => console.log(`Element ${selector} ${text} not found within ${timeout}ms`),
-      onSuccess: () => console.log(`Element ${selector} ${text} found`),
+      onTimeout: () => {}, // 注释掉日志
+      onSuccess: () => {}, // 注释掉日志
       timeoutMessage: `Timeout waiting for element: ${selector} ${text}`
     }).catch(reject);
   });
@@ -66,13 +66,13 @@ const waitForElement = (selector, text = '', timeout = 5000, numberOfElement = 0
 // 尋找元素的輔助函數
 const findElement = (selector, text = '', numberOfElement = 0) => {
   const elements = document.querySelectorAll(selector);
-  console.log(`查找元素: ${selector}, 共找到 ${elements.length} 個`);
+  // console.log(`查找元素: ${selector}, 共找到 ${elements.length} 個`); // 注释掉日志
   if (text) {
     const element = Array.from(elements).find(el => el.innerText.includes(text));
-    console.log(`查找包含文本 "${text}" 的元素: `, element);
+    // console.log(`查找包含文本 "${text}" 的元素: `, element); // 注释掉日志
     return element;
   }
-  console.log(`找到的元素: `, elements[numberOfElement]);
+  // console.log(`找到的元素: `, elements[numberOfElement]); // 注释掉日志
   return elements[numberOfElement];
 };
 
@@ -82,16 +82,16 @@ const clickElement = async (selector, text = '', maxAttempts = 3, interval = 500
     try {
       const element = await waitForElement(selector, text, interval, numberOfElement); // 接收到找到的元素
       if (!element) {
-        console.log(`沒有找到元素: ${selector} ${text}`);
+        // console.log(`沒有找到元素: ${selector} ${text}`); // 注释掉日志
         continue;
       }
-      console.log(`找到的元素: `, element);
+      // console.log(`找到的元素: `, element); // 注释掉日志
       await delayTime(1000);
       element.click(); // 点击找到的元素
-      console.log(`Clicked element: ${selector} ${text}`);
+      // console.log(`Clicked element: ${selector} ${text}`); // 注释掉日志
       return true;
     } catch (error) {
-      console.log(`Attempt ${i + 1} failed: ${error.message}`);
+      // console.log(`Attempt ${i + 1} failed: ${error.message}`); // 注释掉日志
     }
   }
   throw new Error(`Failed to click element after ${maxAttempts} attempts: ${selector} ${text}`);
@@ -101,9 +101,9 @@ const clickElement = async (selector, text = '', maxAttempts = 3, interval = 500
 const captureScreenshot = () => {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage({ action: 'captureScreenshot' }, (response) => {
-      console.log(response)
-      console.log(response.success)
-      console.log(response.dataUrl)
+      // console.log(response) // 注释掉日志
+      // console.log(response.success) // 注释掉日志
+      // console.log(response.dataUrl) // 注释掉日志
       if (response && response.success) {
         resolve(response.dataUrl); // 成功返回截圖的數據URL
       } else {
@@ -129,9 +129,9 @@ const downloadScreenshot = async () => {
     // 下載完成後，移除鏈接
     document.body.removeChild(downloadLink);
 
-    console.log('Screenshot downloaded successfully');
+    // console.log('Screenshot downloaded successfully'); // 注释掉日志
   } catch (error) {
-    console.log('Failed to capture or download screenshot:', error.message);
+    // console.log('Failed to capture or download screenshot:', error.message); // 注释掉日志
   }
 };
 
@@ -141,36 +141,36 @@ async function adjustGoogleMeetLayout() {
     try {
       await clickElement('button[aria-label="取消固定"]');
     } catch (error) {
-      console.log('沒有找到取消固定按鈕')
+      // console.log('沒有找到取消固定按鈕') // 注释掉日志
     }
     
     try {
       await clickElement('div[data-is-menu-dynamic="true"] button[data-tooltip-y-position="2"]');
     } catch (error) {
-      console.log('沒有找到更多選項按鈕')
+      // console.log('沒有找到更多選項按鈕') // 注释掉日志
     }
     
     try {
       await clickElement('[role="menuitem"]', "變更版面配置");
     } catch (error) {
-      console.log('沒有找到變更版面配置按鈕')
+      // console.log('沒有找到變更版面配置按鈕') // 注释掉日志
     }
     
     try {
       await clickElement('input[name="preferences"]', '', 3, 5000, 1);
     } catch (error) {
-      console.log('沒有找到視訊方格按鈕')
+      // console.log('沒有找到視訊方格按鈕') // 注释掉日志
     }
     
     try {
       const slider = await waitForElement('input[type="range"]', '', 10000);
       if (slider) {
-        console.log("slider found")
+        // console.log("slider found") // 注释掉日志
         slider.value = 5;
         slider.dispatchEvent(new Event('change', { bubbles: true }));
       }
     } catch (error) {
-      console.log('沒有找到拉條')
+      // console.log('沒有找到拉條') // 注释掉日志
     }
 
     try {
@@ -180,33 +180,33 @@ async function adjustGoogleMeetLayout() {
       if (buttonElement.getAttribute('aria-checked') === 'true') {
         buttonElement.click();
       }
-      console.log('aria-checked 屬性已改為 false');
+      // console.log('aria-checked 屬性已改為 false'); // 注释掉日志
 
     } catch (error) {
-      console.log('沒有找到隱藏視訊方格選像')
+      // console.log('沒有找到隱藏視訊方格選像') // 注释掉日志
     }
     
     try {
       await clickElement('button[aria-label="Close"]');
     } catch (error) {
-      console.log('沒有找到關閉版面配置按鈕')
+      // console.log('沒有找到關閉版面配置按鈕') // 注释掉日志
     }
     
     try {
       await clickElement('button[aria-label="關閉"]');
     } catch (error) {
-      console.log('沒有找到需要關閉的介面')
+      // console.log('沒有找到需要關閉的介面') // 注释掉日志
     }
     
-    console.log('Google Meet layout adjusted successfully');
+    // console.log('Google Meet layout adjusted successfully'); // 注释掉日志
     
     try {
       downloadScreenshot();
     } catch (error) {
-      console.log('截圖時發生錯誤:', error);
+      // console.log('截圖時發生錯誤:', error); // 注释掉日志
     }
   } catch (error) {
-    console.log('調整版面配置時發生錯誤:', error);
+    // console.log('調整版面配置時發生錯誤:', error); // 注释掉日志
   }
 }
 
@@ -215,10 +215,10 @@ function checkWeekendAndAdjust() {
   const dayOfWeek = today.getDay(); // 0 是星期日，6 是星期六
 
   if (dayOfWeek === 0 || dayOfWeek === 6) {
-    console.log("adjustGoogleMeetLayout")
+    // console.log("adjustGoogleMeetLayout") // 注释掉日志
     adjustGoogleMeetLayout();
   } else {
-    console.log('Today is not a weekend. Skipping layout adjustment.');
+    // console.log('Today is not a weekend. Skipping layout adjustment.'); // 注释掉日志
   }
 }
 
@@ -229,9 +229,9 @@ async function joinMeetingAndAdjust() {
       clickElement('[aria-label="關閉麥克風"]'),
       clickElement('[aria-label="關閉攝影機"]')
     ]);
-    console.log('Microphone and camera disabled');
+    // console.log('Microphone and camera disabled'); // 注释掉日志
   } catch (error) {
-    console.log('關閉麥克風與攝影機時發生錯誤:', error);
+    // console.log('關閉麥克風與攝影機時發生錯誤:', error); // 注释掉日志
     return;
   }
 
@@ -239,28 +239,28 @@ async function joinMeetingAndAdjust() {
     // 等待並點擊加入按鈕
     await Promise.any([
       clickElement('button', '立即加入'),
-      clickElement('button', '切換到這裡')
+      clickElement('button', '切換到這裡'
     ]);
     console.log('Join button clicked');
   } catch (error) {
-    console.log('加入會議時發生錯誤:', error);
+    // console.log('加入會議時發生錯誤:', error);
     return;
   }
 
   try {
     // 等待並點擊OK按鈕
     await clickElement('button[data-mdc-dialog-action="ok"]');
-    console.log('OK button clicked');
+    // console.log('OK button clicked');
 
   } catch (error) {
-    console.log('點擊OK時發生錯誤:', error);
+    // console.log('點擊OK時發生錯誤:', error);
   }
 
   try {
     // 檢查是否為週末並調整版面
     checkWeekendAndAdjust();
   } catch (error) {
-    console.log('調整版面時發生錯誤:', error);
+    // console.log('調整版面時發生錯誤:', error);
     return;
   }
 }
