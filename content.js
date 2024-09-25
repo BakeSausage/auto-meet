@@ -3,7 +3,7 @@ const delayTime = ms => new Promise(resolve => setTimeout(resolve, ms));
 // 改進的 delay 函數，包含超時檢查
 const delay = (ms, options = {}) => {
   const {
-    checkInterval = 1000,
+    checkInterval = 200,
     checkCompletion = () => false,
     onTimeout = () => {},
     onSuccess = () => {},
@@ -54,7 +54,7 @@ const waitForElement = (selector, text = '', timeout = 5000, numberOfElement = 0
     };
 
     delay(timeout, {
-      checkInterval: 1000,
+      checkInterval: 200,
       checkCompletion,
       onTimeout: () => console.log(`Element ${selector} ${text} not found within ${timeout}ms`),
       onSuccess: () => console.log(`Element ${selector} ${text} found`),
@@ -86,7 +86,7 @@ const clickElement = async (selector, text = '', maxAttempts = 3, interval = 500
         continue;
       }
       console.log(`找到的元素: `, element);
-      await delayTime(100);
+      await delayTime(1000);
       element.click(); // 点击找到的元素
       console.log(`Clicked element: ${selector} ${text}`);
       return true;
@@ -157,7 +157,7 @@ async function adjustGoogleMeetLayout() {
     }
     
     try {
-      await clickElement('input[name="preferences"]', '', 5, 5000, 1);
+      await clickElement('input[name="preferences"]', '', 3, 5000, 1);
     } catch (error) {
       console.log('沒有找到視訊方格按鈕')
     }
