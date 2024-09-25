@@ -3,13 +3,15 @@
   "name": "Google Meet Scheduler",
   "version": "1.0",
   "permissions": [
+    "activeTab",
     "alarms",
     "tabs",
     "storage",
     "scripting"
   ],
   "host_permissions": [
-    "https://meet.google.com/*"
+    "https://meet.google.com/*",
+    "<all_urls>"
   ],
   "background": {
     "service_worker": "background.js"
