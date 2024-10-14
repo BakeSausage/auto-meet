@@ -24,7 +24,7 @@
 				for (const signState in signStates) {
 					const {date, hours, minutes, isopen} = signStates[signState];
 
-					if (!date || !hours || !minutes) {
+					if (!date) {
 						console.log("wrong meeting data, return.");
 						console.log({date, hours, minutes, isopen})
 						return;
